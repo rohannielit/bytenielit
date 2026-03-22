@@ -3,7 +3,6 @@ const Notice = require("../models/Notice");
 const { protect, requireRole } = require("../middleware/auth");
 const router = express.Router();
 
-// Get all notices
 router.get("/", protect, async (req, res) => {
   try {
     const { category, priority } = req.query;
@@ -17,7 +16,6 @@ router.get("/", protect, async (req, res) => {
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
-// Create notice - NO file upload
 router.post("/", protect, requireRole("admin", "teacher"), async (req, res) => {
   try {
     const { title, content, category, priority } = req.body;
@@ -30,7 +28,6 @@ router.post("/", protect, requireRole("admin", "teacher"), async (req, res) => {
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
-// Increment view count
 router.patch("/:id/view", protect, async (req, res) => {
   try {
     const notice = await Notice.findByIdAndUpdate(
@@ -42,7 +39,6 @@ router.patch("/:id/view", protect, async (req, res) => {
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
-// Delete notice
 router.delete("/:id", protect, requireRole("admin", "teacher"), async (req, res) => {
   try {
     await Notice.findByIdAndDelete(req.params.id);
