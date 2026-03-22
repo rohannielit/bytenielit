@@ -1,6 +1,6 @@
 const express = require("express");
+const Notice = require("../models/Notice");
 const { protect, requireRole } = require("../middleware/auth");
-const { upload } = require("../middleware/upload");
 const router = express.Router();
 
 // Get all notices
@@ -17,7 +17,7 @@ router.get("/", protect, async (req, res) => {
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
-// Create notice
+// Create notice - NO file upload
 router.post("/", protect, requireRole("admin", "teacher"), async (req, res) => {
   try {
     const { title, content, category, priority } = req.body;
