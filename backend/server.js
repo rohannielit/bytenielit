@@ -7,13 +7,12 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-// Validate required env vars at startup
+// Validate required env vars at startup — warn but don't exit so server stays alive
 const REQUIRED_ENV = ["MONGO_URI", "JWT_SECRET"];
 const missing = REQUIRED_ENV.filter((k) => !process.env[k]);
 if (missing.length > 0) {
-  console.error(`❌ FATAL: Missing environment variables: ${missing.join(", ")}`);
-  console.error("Set these in your hosting platform's Environment/Config Vars section.");
-  process.exit(1);
+  console.warn(`⚠️  WARNING: Missing environment variables: ${missing.join(", ")}`);
+  console.warn("Set these in your hosting platform's Environment/Config Vars section.");
 }
 
 const authRoutes = require("./routes/auth");
@@ -34,21 +33,38 @@ const { initSocket } = require("./socket/socketHandler");
 const app = express();
 const httpServer = http.createServer(app);
 
-// Allow specific origins; CLIENT_URL_ should be set to the Vercel frontend URL on Render
+// Allowed origins — hardcoded Vercel URL + anything set via CLIENT_URL_ env var
 const allowedOrigins = [
-  process.env.CLIENT_URL_ || "http://localhost:3000",
   "https://bytenielitin.vercel.app",
+  process.env.CLIENT_URL_ || "http://localhost:3000",
 ];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, Postman) or matching origins
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS not allowed for origin: ${origin}`));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
 
 const io = new Server(httpServer, {
   cors: { origin: allowedOrigins, methods: ["GET", "POST"], credentials: true },
 });
 
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(cors(corsOptions));
+// Handle preflight OPTIONS requests explicitly for all routes
+app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/api/health", (req, res) => res.json({ status: "ByteNIELIT API running 🚀" }));
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/timetable", timetableRoutes);
