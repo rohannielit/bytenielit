@@ -34,9 +34,9 @@ const { initSocket } = require("./socket/socketHandler");
 const app = express();
 const httpServer = http.createServer(app);
 
-// Allow specific origins; CLIENT_URL should be set to the Vercel frontend URL on Render
+// Allow specific origins; CLIENT_URL_ should be set to the Vercel frontend URL on Render
 const allowedOrigins = [
-  process.env.CLIENT_URL || "http://localhost:3000",
+  process.env.CLIENT_URL_ || "http://localhost:3000",
   "https://bytenielitin.vercel.app",
 ];
 
