@@ -7,8 +7,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 const inp = { width:"100%", padding:"9px 12px", background:"var(--bg3)", border:"1px solid var(--border)", borderRadius:8, color:"var(--text)", fontSize:13, outline:"none" };
 
 // College coordinates — update this to your NIELIT campus location
-const COLLEGE_LAT = 28.6139;
-const COLLEGE_LNG = 77.2090;
+const COLLEGE_LAT = 26.715098;
+const COLLEGE_LNG = 94.172111;
 const ALLOWED_RADIUS_METERS = 300;
 
 function getDistanceMeters(lat1, lng1, lat2, lng2) {

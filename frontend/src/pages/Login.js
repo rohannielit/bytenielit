@@ -29,7 +29,8 @@ export default function Login() {
       <div style={{ width:"100%", maxWidth:400 }}>
         {/* Logo */}
         <div style={{ textAlign:"center", marginBottom:32 }}>
-          <div style={{ width:56, height:56, borderRadius:14, background:"linear-gradient(135deg,#3b82f6,#8b5cf6)", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, fontSize:24, margin:"0 auto 14px" }}>B</div>
+          <img src="/logo1.png" alt="NIELIT Logo" style={{ width:380, height:"auto", objectFit:"contain", margin:"0 auto 14px", display:"block", background:"#fff", padding:10, borderRadius:12 }} />
+.
           <h1 style={{ fontSize:24, fontWeight:700, letterSpacing:"-0.5px" }}>ByteNIELIT</h1>
           <p style={{ color:"var(--text2)", fontSize:14, marginTop:4 }}>Your campus, all in one place</p>
         </div>

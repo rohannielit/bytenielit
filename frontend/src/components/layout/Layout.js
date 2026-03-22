@@ -32,7 +32,7 @@ export default function Layout() {
       <aside style={{ width: collapsed ? 64 : 220, background:"var(--card)", borderRight:"1px solid var(--border)", display:"flex", flexDirection:"column", transition:"width 0.25s ease", flexShrink:0, overflow:"hidden" }}>
         {/* Logo */}
         <div style={{ padding:"20px 16px", borderBottom:"1px solid var(--border)", display:"flex", alignItems:"center", gap:10 }}>
-          <div style={{ width:32, height:32, borderRadius:8, background:"linear-gradient(135deg,#3b82f6,#8b5cf6)", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, fontSize:14, flexShrink:0 }}>B</div>
+          <img src="/logo2.webp" alt="NIELIT" style={{ width:34, height:34, objectFit:"contain", flexShrink:0, borderRadius:6, background:"#fff", padding:2 }} />
           {!collapsed && <span style={{ fontWeight:700, fontSize:15, letterSpacing:"-0.3px", whiteSpace:"nowrap" }}>ByteNIELIT</span>}
         </div>
 

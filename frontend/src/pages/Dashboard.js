@@ -56,7 +56,13 @@ export default function Dashboard() {
     <div style={{ padding:28, maxWidth:1200, margin:"0 auto" }} className="fade-in">
       {/* Header */}
       <div style={{ marginBottom:28 }}>
-        <h1 style={{ fontSize:22, fontWeight:700, letterSpacing:"-0.4px" }}>{greet()}, {user?.name?.split(" ")[0]} 👋</h1>
+        <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:8 }}>
+  <img src="/logo1.png" alt="NIELIT" style={{ width:60, height:60, objectFit:"contain", background:"#fff", borderRadius:10, padding:4 }} />
+  <div>
+    <h1 style={{ fontSize:22, fontWeight:700, letterSpacing:"-0.4px" }}>{greet()}, {user?.name?.split(" ")[0]} 👋</h1>
+    <p style={{ color:"var(--text2)", fontSize:13, marginTop:2 }}>NIELIT Jorhat EC · ByteNIELIT</p>
+  </div>
+</div>
         <p style={{ color:"var(--text2)", fontSize:14, marginTop:4 }}>
           {new Date().toLocaleDateString("en-IN",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}
           {user?.branch && ` · ${user.branch} Sem ${user?.semester}`}
