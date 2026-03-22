@@ -1,5 +1,4 @@
 const express = require("express");
-const Notice = require("../models/Notice");
 const { protect, requireRole } = require("../middleware/auth");
 const { upload } = require("../middleware/upload");
 const router = express.Router();
@@ -19,7 +18,7 @@ router.get("/", protect, async (req, res) => {
 });
 
 // Create notice
-router.post("/", protect, requireRole("admin", "teacher"), upload.single("attachment"), async (req, res) => {
+router.post("/", protect, requireRole("admin", "teacher"), async (req, res) => {
   try {
     const { title, content, category, priority } = req.body;
     const notice = await Notice.create({
