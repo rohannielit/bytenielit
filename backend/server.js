@@ -7,6 +7,15 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
+// Validate required env vars at startup
+const REQUIRED_ENV = ["MONGO_URI", "JWT_SECRET"];
+const missing = REQUIRED_ENV.filter((k) => !process.env[k]);
+if (missing.length > 0) {
+  console.error(`❌ FATAL: Missing environment variables: ${missing.join(", ")}`);
+  console.error("Set these in your hosting platform's Environment/Config Vars section.");
+  process.exit(1);
+}
+
 const authRoutes = require("./routes/auth");
 const timetableRoutes = require("./routes/timetable");
 const notesRoutes = require("./routes/notes");
@@ -25,13 +34,18 @@ const { initSocket } = require("./socket/socketHandler");
 const app = express();
 const httpServer = http.createServer(app);
 
+// Use wildcard CORS in production for flexibility; lock down CLIENT_URL in env for security
+const allowedOrigin = process.env.CLIENT_URL || "*";
+
 const io = new Server(httpServer, {
-  cors: { origin: process.env.CLIENT_URL || "http://localhost:3000", methods: ["GET","POST"], credentials: true },
+  cors: { origin: allowedOrigin, methods: ["GET", "POST"], credentials: true },
 });
 
-app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: allowedOrigin, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.get("/api/health", (req, res) => res.json({ status: "ByteNIELIT API running 🚀" }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/timetable", timetableRoutes);
@@ -46,14 +60,17 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/notices", noticesRoutes);
 app.use("/api/profile", profileRoutes);
 
-app.get("/api/health", (req, res) => res.json({ status: "ByteNIELIT API running 🚀" }));
-
 initSocket(io);
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB connected");
-    const PORT = process.env.PORT || 5000;
-    httpServer.listen(PORT, () => console.log(`🚀 ByteNIELIT server running on port ${PORT}`));
-  })
-  .catch((err) => console.error("❌ MongoDB error:", err));
+// Start HTTP server FIRST so Render's health check passes, then connect DB
+const PORT = process.env.PORT || 5000;
+httpServer.listen(PORT, () => {
+  console.log(`🚀 ByteNIELIT server running on port ${PORT}`);
+  // Connect to MongoDB after server is already listening
+  mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("✅ MongoDB connected"))
+    .catch((err) => {
+      console.error("❌ MongoDB connection error:", err.message);
+      process.exit(1);
+    });
+});
