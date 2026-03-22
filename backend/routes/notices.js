@@ -24,7 +24,6 @@ router.post("/", protect, requireRole("admin", "teacher"), async (req, res) => {
     const notice = await Notice.create({
       title, content, category, priority,
       postedBy: req.user.id,
-      attachmentUrl: req.file?.path,
     });
     await notice.populate("postedBy", "name role");
     res.status(201).json(notice);
