@@ -34,14 +34,17 @@ const { initSocket } = require("./socket/socketHandler");
 const app = express();
 const httpServer = http.createServer(app);
 
-// Use wildcard CORS in production for flexibility; lock down CLIENT_URL in env for security
-const allowedOrigin = process.env.CLIENT_URL || "*";
+// Allow specific origins; CLIENT_URL should be set to the Vercel frontend URL on Render
+const allowedOrigins = [
+  process.env.CLIENT_URL || "http://localhost:3000",
+  "https://bytenielitin.vercel.app",
+];
 
 const io = new Server(httpServer, {
-  cors: { origin: allowedOrigin, methods: ["GET", "POST"], credentials: true },
+  cors: { origin: allowedOrigins, methods: ["GET", "POST"], credentials: true },
 });
 
-app.use(cors({ origin: allowedOrigin, credentials: true }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
