@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ByteNIELIT — Campus Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #18181f;
+  --card: #1c1c25;
+  --border: rgba(255,255,255,0.07);
+  --accent: #6c63ff;
+  --accent2: #ff6b6b;
+  --accent3: #43e97b;
+  --accent4: #f7971e;
+  --accent5: #4ecdc4;
+  --text: #f0f0f8;
+  --muted: #888898;
+  --font-head: 'Syne', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;width:220px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;padding:24px 0;}
+.logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+.logo-text{font-family:var(--font-head);font-weight:800;font-size:20px;letter-spacing:-0.5px;}
+.logo-text span{color:var(--accent);}
+.logo-sub{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:2px;}
+
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;transition:all 0.2s;font-size:14px;color:var(--muted);position:relative;font-weight:500;}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.04);}
+.nav-item.active{color:var(--text);background:rgba(108,99,255,0.12);}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--accent);border-radius:0 2px 2px 0;}
+.nav-icon{width:18px;text-align:center;font-size:15px;}
+.nav-badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:10px;font-family:var(--font-mono);padding:1px 6px;border-radius:20px;font-weight:700;}
+
+.sidebar-bottom{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+.user-card{display:flex;align-items:center;gap:10px;}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:700;font-size:13px;}
+.user-name{font-size:13px;font-weight:500;}
+.user-role{font-size:10px;color:var(--muted);font-family:var(--font-mono);}
+
+/* MAIN CONTENT */
+.main{margin-left:220px;min-height:100vh;}
+.topbar{height:60px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:16px;position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:var(--font-head);font-weight:700;font-size:18px;flex:1;}
+.topbar-actions{display:flex;gap:8px;align-items:center;}
+.btn{padding:7px 16px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text);font-family:var(--font-body);font-size:13px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.btn:hover{background:rgba(255,255,255,0.05);}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.btn-primary:hover{background:#7b74ff;filter:brightness(1.1);}
+
+.content{padding:28px;}
+
+/* PAGE SECTIONS */
+.page{display:none;}
+.page.active{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.card-title{font-family:var(--font-head);font-weight:700;font-size:15px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+
+/* GRID LAYOUTS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+
+/* STAT CARDS */
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:0.08;}
+.stat-card.purple::after{background:var(--accent);}
+.stat-card.red::after{background:var(--accent2);}
+.stat-card.green::after{background:var(--accent3);}
+.stat-card.orange::after{background:var(--accent4);}
+.stat-label{font-size:11px;font-family:var(--font-mono);color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.stat-value{font-family:var(--font-head);font-size:32px;font-weight:800;margin:6px 0 4px;line-height:1;}
+.stat-sub{font-size:12px;color:var(--muted);}
+.stat-icon{font-size:20px;margin-bottom:8px;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:10px 14px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04);}
+tr:hover td{background:rgba(255,255,255,0.02);}
+
+/* BADGES */
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-family:var(--font-mono);font-weight:700;display:inline-block;}
+.badge-pending{background:rgba(247,151,30,0.15);color:var(--accent4);}
+.badge-progress{background:rgba(108,99,255,0.15);color:var(--accent);}
+.badge-resolved{background:rgba(67,233,123,0.15);color:var(--accent3);}
+.badge-holiday{background:rgba(255,107,107,0.15);color:var(--accent2);}
+.badge-event{background:rgba(78,205,196,0.15);color:var(--accent5);}
+
+/* TIMETABLE */
+.timetable{display:grid;grid-template-columns:60px repeat(6,1fr);gap:3px;font-size:12px;}
+.tt-header{background:var(--bg3);padding:8px 6px;text-align:center;border-radius:4px;font-family:var(--font-mono);font-size:10px;color:var(--muted);font-weight:700;}
+.tt-time{background:var(--bg3);padding:8px 6px;text-align:center;border-radius:4px;font-family:var(--font-mono);font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:center;}
+.tt-cell{border-radius:6px;padding:8px 8px;min-height:60px;display:flex;flex-direction:column;justify-content:center;}
+.tt-cell.empty{background:var(--bg3);opacity:0.4;}
+.tt-cell.filled{cursor:pointer;transition:filter 0.2s;}
+.tt-cell.filled:hover{filter:brightness(1.2);}
+.tt-sub{font-size:10px;opacity:0.75;margin-top:2px;font-family:var(--font-mono);}
+.tt-room{font-size:9px;opacity:0.6;margin-top:1px;}
+
+/* CHAT */
+.chat-layout{display:grid;grid-template-columns:260px 1fr;gap:0;height:calc(100vh - 116px);background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.chat-sidebar{border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.chat-sidebar-header{padding:16px;border-bottom:1px solid var(--border);font-family:var(--font-head);font-weight:700;font-size:14px;}
+.chat-room{padding:12px 16px;cursor:pointer;transition:background 0.15s;display:flex;align-items:center;gap:10px;}
+.chat-room:hover{background:rgba(255,255,255,0.04);}
+.chat-room.active{background:rgba(108,99,255,0.1);}
+.chat-room-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.chat-room-name{font-size:13px;font-weight:500;}
+.chat-room-last{font-size:11px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
+.chat-online{font-size:10px;font-family:var(--font-mono);color:var(--accent3);margin-left:auto;flex-shrink:0;}
+
+.chat-main{display:flex;flex-direction:column;}
+.chat-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;}
+.chat-msg{display:flex;gap:10px;max-width:75%;}
+.chat-msg.own{align-self:flex-end;flex-direction:row-reverse;}
+.msg-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--font-head);font-weight:700;flex-shrink:0;}
+.msg-bubble{background:var(--bg3);border-radius:12px;padding:10px 14px;font-size:13px;line-height:1.5;}
+.chat-msg.own .msg-bubble{background:rgba(108,99,255,0.25);border:1px solid rgba(108,99,255,0.3);}
+.msg-meta{font-size:10px;color:var(--muted);margin-top:4px;font-family:var(--font-mono);}
+.chat-input-area{padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;}
+.chat-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:24px;padding:10px 18px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.2s;}
+.chat-input:focus{border-color:var(--accent);}
+.chat-send{width:38px;height:38px;border-radius:50%;background:var(--accent);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:transform 0.15s,filter 0.2s;}
+.chat-send:hover{transform:scale(1.1);filter:brightness(1.15);}
+.typing-indicator{font-size:11px;color:var(--muted);font-family:var(--font-mono);padding:0 20px 6px;}
+
+/* ATTENDANCE */
+.att-bar-wrap{background:var(--bg3);border-radius:6px;height:8px;overflow:hidden;margin-top:6px;}
+.att-bar{height:100%;border-radius:6px;transition:width 0.8s ease;}
+
+/* FORMS */
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;font-family:var(--font-mono);color:var(--muted);letter-spacing:0.5px;display:block;margin-bottom:6px;}
+.form-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color 0.2s;}
+.form-input:focus{border-color:var(--accent);}
+select.form-input option{background:var(--bg3);}
+
+/* NOTES */
+.note-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;transition:border-color 0.2s,transform 0.2s;cursor:pointer;}
+.note-card:hover{border-color:rgba(108,99,255,0.4);transform:translateY(-2px);}
+.note-tag{font-size:10px;font-family:var(--font-mono);padding:2px 8px;border-radius:4px;background:rgba(108,99,255,0.15);color:var(--accent);display:inline-block;margin-bottom:8px;}
+.note-title{font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:4px;}
+.note-meta{font-size:11px;color:var(--muted);font-family:var(--font-mono);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:28px;width:460px;max-width:92vw;animation:fadeUp 0.25s ease;}
+.modal-title{font-family:var(--font-head);font-size:18px;font-weight:800;margin-bottom:20px;}
+.modal-close{float:right;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;margin-top:-4px;}
+
+/* MINI CHART */
+.mini-bar-chart{display:flex;align-items:flex-end;gap:4px;height:60px;}
+.mini-bar{flex:1;border-radius:3px 3px 0 0;transition:height 0.6s ease;cursor:pointer;}
+.mini-bar:hover{filter:brightness(1.2);}
+
+/* EVENTS TIMELINE */
+.event-item{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--border);}
+.event-date{min-width:50px;text-align:center;font-family:var(--font-mono);}
+.event-day{font-size:22px;font-weight:700;line-height:1;}
+.event-month{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.event-content{flex:1;}
+.event-name{font-weight:600;font-size:14px;margin-bottom:3px;}
+.event-desc{font-size:12px;color:var(--muted);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;z-index:300;transform:translateY(80px);opacity:0;transition:all 0.3s;display:flex;align-items:center;gap:8px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* DASHBOARD ACTIVITY */
+.activity-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);align-items:flex-start;}
+.activity-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.activity-text{font-size:13px;line-height:1.4;}
+.activity-time{font-size:10px;color:var(--muted);font-family:var(--font-mono);white-space:nowrap;margin-left:auto;}
+
+/* COMPLAINT STATUS FLOW */
+.status-flow{display:flex;gap:0;align-items:center;margin:14px 0;}
+.sf-step{flex:1;text-align:center;padding:8px 4px;font-size:11px;font-family:var(--font-mono);position:relative;}
+.sf-step::after{content:'→';position:absolute;right:-6px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:10px;}
+.sf-step:last-child::after{display:none;}
+.sf-step.done{color:var(--accent3);}
+.sf-step.active{color:var(--accent);font-weight:700;}
+.sf-step.waiting{color:var(--muted);}
+
+/* SCROLLABLE */
+.scrollable{overflow-y:auto;max-height:400px;}
+
+/* SECTION HEADER */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.section-title{font-family:var(--font-head);font-size:22px;font-weight:800;}
+.section-sub{font-size:13px;color:var(--muted);margin-top:2px;}
+
+/* LOGIN PAGE */
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);position:fixed;inset:0;z-index:500;}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;width:400px;max-width:94vw;}
+.login-logo{font-family:var(--font-head);font-size:26px;font-weight:800;margin-bottom:6px;}
+.login-logo span{color:var(--accent);}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:28px;font-family:var(--font-mono);}
+
+/* PROGRESS RING */
+.progress-ring{position:relative;display:inline-block;}
+.progress-ring svg{transform:rotate(-90deg);}
+.ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-val{font-family:var(--font-head);font-size:18px;font-weight:800;}
+.ring-sub{font-size:9px;color:var(--muted);font-family:var(--font-mono);}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div class="login-page" id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">Byte<span>NIELIT</span></div>
+    <div class="login-sub">// CAMPUS PLATFORM v2.0</div>
+    <div class="form-group">
+      <label class="form-label">ENROLLMENT ID</label>
+      <input class="form-input" type="text" placeholder="e.g. NIELIT/2024/001" id="loginId"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">PASSWORD</label>
+      <input class="form-input" type="password" placeholder="••••••••" id="loginPass"/>
+    </div>
+    <div class="form-group" style="margin-bottom:20px;">
+      <label class="form-label">ROLE</label>
+      <select class="form-input" id="loginRole">
+        <option value="student">Student</option>
+        <option value="teacher">Teacher</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;" onclick="doLogin()">
+      LOGIN →
+    </button>
+    <div style="margin-top:16px;font-size:11px;color:var(--muted);text-align:center;font-family:var(--font-mono);">
+      Demo: any ID + any password
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar" style="display:none;">
+  <div class="logo">
+    <div class="logo-text">Byte<span>NIELIT</span></div>
+    <div class="logo-sub">CAMPUS PLATFORM v2.0</div>
+  </div>
+  <div class="nav-item active" onclick="navigate('dashboard',this)"><span class="nav-icon">⊞</span> Dashboard</div>
+  <div class="nav-item" onclick="navigate('timetable',this)"><span class="nav-icon">◫</span> Timetable</div>
+  <div class="nav-item" onclick="navigate('notes',this)"><span class="nav-icon">◧</span> Notes & Assignments</div>
+  <div class="nav-item" onclick="navigate('events',this)"><span class="nav-icon">◈</span> Events & Holidays</div>
+  <div class="nav-item" onclick="navigate('complaints',this)"><span class="nav-icon">⚑</span> Complaints <span class="nav-badge">3</span></div>
+  <div class="nav-item" onclick="navigate('chat',this)"><span class="nav-icon">◎</span> Group Chat</div>
+  <div class="nav-item" onclick="navigate('attendance',this)"><span class="nav-icon">◉</span> Attendance</div>
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <div>
+        <div class="user-name" id="userName">Loading...</div>
+        <div class="user-role" id="userRole">--</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="main" id="mainApp" style="display:none;">
+  <div class="topbar">
+    <div class="topbar-title" id="pageTitle">Dashboard</div>
+    <div class="topbar-actions">
+      <button class="btn" onclick="showNotif()">🔔 Notifications</button>
+      <button class="btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="page active" id="page-dashboard">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Good morning, <span id="greetName" style="color:var(--accent)">Student</span> 👋</div>
+          <div class="section-sub">Here's what's happening today at NIELIT</div>
+        </div>
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);" id="currentDate"></div>
+      </div>
+
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="stat-card purple">
+          <div class="stat-icon">📚</div>
+          <div class="stat-label">Today's Classes</div>
+          <div class="stat-value">5</div>
+          <div class="stat-sub">2 remaining</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon">📝</div>
+          <div class="stat-label">Pending Tasks</div>
+          <div class="stat-value">3</div>
+          <div class="stat-sub">Due this week</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">📊</div>
+          <div class="stat-label">Attendance</div>
+          <div class="stat-value">84%</div>
+          <div class="stat-sub">Above 75% ✓</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-icon">💬</div>
+          <div class="stat-label">New Messages</div>
+          <div class="stat-value">12</div>
+          <div class="stat-sub">In 3 channels</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-title">📅 Today's Schedule</div>
+          <table>
+            <thead><tr><th>TIME</th><th>SUBJECT</th><th>ROOM</th></tr></thead>
+            <tbody>
+              <tr><td><span style="font-family:var(--font-mono);color:var(--accent)">09:00</span></td><td>Data Structures</td><td>Lab-3</td></tr>
+              <tr><td><span style="font-family:var(--font-mono);color:var(--accent)">11:00</span></td><td>DBMS</td><td>Room-201</td></tr>
+              <tr><td><span style="font-family:var(--font-mono);color:var(--muted)">14:00</span></td><td style="color:var(--muted)">Computer Networks</td><td style="color:var(--muted)">Room-102</td></tr>
+              <tr><td><span style="font-family:var(--font-mono);color:var(--muted)">16:00</span></td><td style="color:var(--muted)">OS Lab</td><td style="color:var(--muted)">Lab-1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">⚡ Recent Activity</div>
+          <div id="activityFeed">
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--accent)"></div>
+              <div class="activity-text">New assignment uploaded: <strong>DSA Assignment 4</strong></div>
+              <div class="activity-time">2m ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--accent3)"></div>
+              <div class="activity-text">Complaint #C004 status updated to <strong>In Progress</strong></div>
+              <div class="activity-time">15m ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--accent4)"></div>
+              <div class="activity-text">Rahul posted in <strong>#general</strong> chat</div>
+              <div class="activity-time">22m ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--accent2)"></div>
+              <div class="activity-text">Holiday announced: <strong>Holi — March 25</strong></div>
+              <div class="activity-time">1h ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--accent5)"></div>
+              <div class="activity-text">Attendance marked for <strong>DBMS</strong></div>
+              <div class="activity-time">2h ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📊 Weekly Attendance</div>
+          <div class="mini-bar-chart" id="weeklyChart"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;font-family:var(--font-mono);color:var(--muted);">
+            <span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎉 Upcoming Events</div>
+          <div class="event-item" style="padding-top:0;">
+            <div class="event-date"><div class="event-day" style="color:var(--accent2)">25</div><div class="event-month">MAR</div></div>
+            <div class="event-content"><div class="event-name">Holi Festival</div><div class="event-desc"><span class="badge badge-holiday">Holiday</span></div></div>
+          </div>
+          <div class="event-item">
+            <div class="event-date"><div class="event-day" style="color:var(--accent5)">28</div><div class="event-month">MAR</div></div>
+            <div class="event-content"><div class="event-name">Tech Fest 2025</div><div class="event-desc"><span class="badge badge-event">Event</span></div></div>
+          </div>
+          <div class="event-item">
+            <div class="event-date"><div class="event-day" style="color:var(--accent4)">05</div><div class="event-month">APR</div></div>
+            <div class="event-content"><div class="event-name">Mid-Semester Exam</div><div class="event-desc"><span class="badge badge-progress">Exam</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TIMETABLE ===== -->
+    <div class="page" id="page-timetable">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Weekly Timetable</div>
+          <div class="section-sub">B.Sc IT — Semester IV · Academic Year 2024-25</div>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('📅 Timetable exported to PDF!')">Export PDF</button>
+      </div>
+      <div class="card">
+        <div class="timetable" id="timetableGrid"></div>
+      </div>
+    </div>
+
+    <!-- ===== NOTES ===== -->
+    <div class="page" id="page-notes">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Notes & Assignments</div>
+          <div class="section-sub">All uploaded study materials and assignments</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('uploadModal')">+ Upload File</button>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+        <button class="btn" onclick="filterNotes('all',this)" style="border-color:var(--accent);color:var(--accent)">All</button>
+        <button class="btn" onclick="filterNotes('notes',this)">Notes</button>
+        <button class="btn" onclick="filterNotes('assignment',this)">Assignments</button>
+        <button class="btn" onclick="filterNotes('pyq',this)">PYQs</button>
+      </div>
+      <div class="grid-3" id="notesGrid"></div>
+    </div>
+
+    <!-- ===== EVENTS ===== -->
+    <div class="page" id="page-events">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Events & Holidays</div>
+          <div class="section-sub">Academic calendar 2024-25</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('eventModal')">+ Add Event</button>
+      </div>
+      <div class="grid-2">
+        <div class="card" style="max-height:500px;overflow-y:auto;">
+          <div class="card-title">📅 Upcoming</div>
+          <div id="eventsList"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Summary</div>
+          <div class="grid-2" style="margin-bottom:16px;">
+            <div style="background:var(--bg3);border-radius:10px;padding:14px;text-align:center;">
+              <div style="font-size:24px;font-family:var(--font-head);font-weight:800;color:var(--accent2)">8</div>
+              <div style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">HOLIDAYS</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:10px;padding:14px;text-align:center;">
+              <div style="font-size:24px;font-family:var(--font-head);font-weight:800;color:var(--accent5)">12</div>
+              <div style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">EVENTS</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Next holiday in</div>
+          <div style="font-family:var(--font-head);font-size:36px;font-weight:800;color:var(--accent)">4 <span style="font-size:14px;color:var(--muted)">days</span></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">Holi — March 25, 2025</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== COMPLAINTS ===== -->
+    <div class="page" id="page-complaints">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Complaint System</div>
+          <div class="section-sub">Track and manage your complaints</div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('complaintModal')">+ New Complaint</button>
+      </div>
+      <div class="status-flow">
+        <div class="sf-step done">● SUBMITTED</div>
+        <div class="sf-step active">● IN REVIEW</div>
+        <div class="sf-step waiting">○ RESOLVED</div>
+      </div>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>SUBJECT</th><th>CATEGORY</th><th>DATE</th><th>STATUS</th><th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="complaintsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== CHAT ===== -->
+    <div class="page" id="page-chat">
+      <div class="section-header" style="margin-bottom:12px;">
+        <div>
+          <div class="section-title">Group Chat</div>
+          <div class="section-sub" id="onlineCount">— users online</div>
+        </div>
+      </div>
+      <div class="chat-layout">
+        <div class="chat-sidebar">
+          <div class="chat-sidebar-header">Channels</div>
+          <div class="chat-room active" onclick="switchRoom('general',this)">
+            <div class="chat-room-dot" style="background:var(--accent3)"></div>
+            <div><div class="chat-room-name"># general</div><div class="chat-room-last">Hey everyone! What's up?</div></div>
+            <div class="chat-online">24</div>
+          </div>
+          <div class="chat-room" onclick="switchRoom('bscit',this)">
+            <div class="chat-room-dot" style="background:var(--accent)"></div>
+            <div><div class="chat-room-name"># bsc-it-sem4</div><div class="chat-room-last">DSA assignment uploaded</div></div>
+            <div class="chat-online">18</div>
+          </div>
+          <div class="chat-room" onclick="switchRoom('dsa',this)">
+            <div class="chat-room-dot" style="background:var(--accent4)"></div>
+            <div><div class="chat-room-name"># dsa-doubts</div><div class="chat-room-last">Can someone explain trees?</div></div>
+            <div class="chat-online">7</div>
+          </div>
+          <div class="chat-room" onclick="switchRoom('placement',this)">
+            <div class="chat-room-dot" style="background:var(--accent2)"></div>
+            <div><div class="chat-room-name"># placements</div><div class="chat-room-last">TCS drive on April 10</div></div>
+            <div class="chat-online">31</div>
+          </div>
+          <div class="chat-room" onclick="switchRoom('random',this)">
+            <div class="chat-room-dot" style="background:var(--accent5)"></div>
+            <div><div class="chat-room-name"># random</div><div class="chat-room-last">lol 😂</div></div>
+            <div class="chat-online">15</div>
+          </div>
+        </div>
+        <div class="chat-main">
+          <div class="chat-header">
+            <div>
+              <div style="font-family:var(--font-head);font-weight:700;font-size:14px;" id="chatRoomTitle"># general</div>
+              <div style="font-size:11px;color:var(--muted);font-family:var(--font-mono);">24 members • Real-time via Socket.io</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn" style="font-size:12px;" onclick="showToast('🤖 AI Summary: Mostly discussion about DSA assignment and upcoming Tech Fest!')">🤖 AI Summary</button>
+            </div>
+          </div>
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="typing-indicator" id="typingIndicator"></div>
+          <div class="chat-input-area">
+            <input class="chat-input" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+            <button class="chat-send" onclick="sendMessage()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ATTENDANCE ===== -->
+    <div class="page" id="page-attendance">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Attendance & Analytics</div>
+          <div class="section-sub">Track your subject-wise attendance</div>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('📊 Attendance report downloaded!')">Download Report</button>
+      </div>
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="stat-card purple">
+          <div class="stat-label">Overall</div>
+          <div class="stat-value" style="font-size:28px;color:var(--accent)">84%</div>
+          <div class="stat-sub">Safe ✓</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Classes Attended</div>
+          <div class="stat-value" style="font-size:28px;">126</div>
+          <div class="stat-sub">of 150 total</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-label">Can Skip</div>
+          <div class="stat-value" style="font-size:28px;color:var(--accent4)">6</div>
+          <div class="stat-sub">More classes</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Low Subjects</div>
+          <div class="stat-value" style="font-size:28px;color:var(--accent2)">1</div>
+          <div class="stat-sub">Below 75%</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📚 Subject-wise Breakdown</div>
+          <div id="subjectAttendance"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">📈 Monthly Trend</div>
+          <div id="monthlyTrend" style="display:flex;align-items:flex-end;gap:6px;height:120px;margin-bottom:8px;"></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;font-family:var(--font-mono);color:var(--muted);">
+            <span>JAN</span><span>FEB</span><span>MAR</span><span>APR</span><span>MAY</span><span>JUN</span>
+          </div>
+          <div style="margin-top:16px;padding:12px;background:var(--bg3);border-radius:8px;font-size:12px;">
+            <span style="color:var(--accent4);font-family:var(--font-mono)">⚠ Warning:</span>
+            <span style="color:var(--muted);margin-left:6px;">OS Lab attendance is 68% — attend next 4 classes to reach 75%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- MODALS -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <div class="modal-title">📚 Upload Study Material <button class="modal-close" onclick="closeModal('uploadModal')">×</button></div>
+    <div class="form-group">
+      <label class="form-label">TITLE</label>
+      <input class="form-input" id="noteTitle" placeholder="e.g. Unit 3 Notes — Sorting Algorithms"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">SUBJECT</label>
+      <select class="form-input" id="noteSubject">
+        <option>Data Structures & Algorithms</option>
+        <option>DBMS</option>
+        <option>Computer Networks</option>
+        <option>Operating Systems</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">TYPE</label>
+      <select class="form-input" id="noteType">
+        <option value="notes">Notes</option>
+        <option value="assignment">Assignment</option>
+        <option value="pyq">Previous Year Paper</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">FILE (PDF / Image)</label>
+      <input class="form-input" type="file" id="noteFile" accept=".pdf,.jpg,.png"/>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="uploadNote()">Upload to Cloudinary →</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="complaintModal">
+  <div class="modal">
+    <div class="modal-title">⚑ File a Complaint <button class="modal-close" onclick="closeModal('complaintModal')">×</button></div>
+    <div class="form-group">
+      <label class="form-label">SUBJECT</label>
+      <input class="form-input" id="complaintSubject" placeholder="Brief subject of complaint"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">CATEGORY</label>
+      <select class="form-input" id="complaintCategory">
+        <option>Infrastructure</option>
+        <option>Faculty</option>
+        <option>Library</option>
+        <option>Hostel</option>
+        <option>Academic</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">DESCRIPTION</label>
+      <textarea class="form-input" rows="3" id="complaintDesc" placeholder="Describe the issue in detail..."></textarea>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitComplaint()">Submit Complaint →</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="eventModal">
+  <div class="modal">
+    <div class="modal-title">🎉 Add Event <button class="modal-close" onclick="closeModal('eventModal')">×</button></div>
+    <div class="form-group">
+      <label class="form-label">EVENT NAME</label>
+      <input class="form-input" id="eventName" placeholder="e.g. Annual Sports Day"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">DATE</label>
+      <input class="form-input" type="date" id="eventDate"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">TYPE</label>
+      <select class="form-input" id="eventType">
+        <option value="event">Event</option>
+        <option value="holiday">Holiday</option>
+        <option value="exam">Exam</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitEvent()">Add to Calendar →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+// ===== DATA =====
+let currentUser = null;
+let currentRoom = 'general';
+
+const MESSAGES = {
+  general: [
+    {user:'Rahul Sharma',role:'student',text:'Hey everyone! What\'s the deadline for DSA Assignment 4?',time:'09:12',own:false},
+    {user:'Priya Singh',role:'student',text:'I think it\'s this Friday. Prof. Mehta announced it in class.',time:'09:14',own:false},
+    {user:'Prof. Mehta',role:'teacher',text:'Yes, DSA Assignment 4 deadline is Friday 5pm. Submit on the portal.',time:'09:20',own:false},
+    {user:'Ankit Kumar',role:'student',text:'Thanks sir! Also when are results for Unit Test 2 coming?',time:'09:22',own:false},
+    {user:'Prof. Mehta',role:'teacher',text:'Results will be uploaded by tomorrow evening.',time:'09:25',own:false},
+  ],
+  bscit:[
+    {user:'Admin',role:'admin',text:'B.Sc IT Sem 4 students: Mid-semester schedule has been updated. Check Events page.',time:'08:00',own:false},
+    {user:'Sneha Patel',role:'student',text:'Okay noted! Also, is there any change in DBMS syllabus?',time:'08:30',own:false},
+  ],
+  dsa:[
+    {user:'Kartik Nair',role:'student',text:'Can someone explain AVL tree rotations? I\'m confused 😅',time:'10:00',own:false},
+    {user:'Meena Reddy',role:'student',text:'Sure! LL rotation: when left subtree of left child is causing imbalance...',time:'10:05',own:false},
+  ],
+  placement:[
+    {user:'Placement Cell',role:'admin',text:'TCS is visiting on April 10! Minimum 70% aggregate required. Register by April 5.',time:'11:00',own:false},
+    {user:'Raj Verma',role:'student',text:'Is CGPA or percentage considered?',time:'11:10',own:false},
+    {user:'Placement Cell',role:'admin',text:'Percentage of aggregate marks across all semesters.',time:'11:12',own:false},
+  ],
+  random:[
+    {user:'Aditya Joshi',role:'student',text:'Anyone watching IPL tonight? 🏏',time:'17:00',own:false},
+    {user:'Sunita Rao',role:'student',text:'Yess!! MI vs CSK 🔥',time:'17:02',own:false},
+    {user:'Aditya Joshi',role:'student',text:'lol 😂 let\'s goo',time:'17:03',own:false},
+  ]
+};
+
+const COMPLAINTS = [
+  {id:'C001',subject:'Library books not returned on time',category:'Library',date:'Mar 12',status:'resolved'},
+  {id:'C002',subject:'AC not working in Room 201',category:'Infrastructure',date:'Mar 15',status:'resolved'},
+  {id:'C003',subject:'Missing attendance in DBMS',category:'Academic',date:'Mar 18',status:'progress'},
+  {id:'C004',subject:'Projector broken in Room 102',category:'Infrastructure',date:'Mar 20',status:'progress'},
+  {id:'C005',subject:'Hostel WiFi very slow after 9pm',category:'Hostel',date:'Mar 21',status:'pending'},
+];
+
+const NOTES = [
+  {title:'Unit 3: Sorting Algorithms',subject:'DSA',type:'notes',date:'Mar 18',size:'2.4 MB',by:'Prof. Mehta'},
+  {title:'DSA Assignment 4 — Trees',subject:'DSA',type:'assignment',date:'Mar 19',size:'0.8 MB',by:'Prof. Mehta'},
+  {title:'ER Diagram Practice Set',subject:'DBMS',type:'notes',date:'Mar 15',size:'1.2 MB',by:'Prof. Sharma'},
+  {title:'Network Layers Notes',subject:'CN',type:'notes',date:'Mar 10',size:'3.1 MB',by:'Prof. Nair'},
+  {title:'OS Previous Year 2022',subject:'OS',type:'pyq',date:'Mar 5',size:'1.9 MB',by:'Admin'},
+  {title:'DBMS Assignment 3',subject:'DBMS',type:'assignment',date:'Feb 28',size:'0.4 MB',by:'Prof. Sharma'},
+  {title:'Process Scheduling Notes',subject:'OS',type:'notes',date:'Feb 25',size:'2.0 MB',by:'Prof. Kumar'},
+  {title:'TCP/IP Deep Dive',subject:'CN',type:'notes',date:'Feb 20',size:'2.8 MB',by:'Prof. Nair'},
+  {title:'DSA PYQ 2023',subject:'DSA',type:'pyq',date:'Feb 18',size:'1.6 MB',by:'Admin'},
+];
+
+const EVENTS = [
+  {name:'Holi Festival',date:'25',month:'MAR',type:'holiday',desc:'National Holiday'},
+  {name:'Tech Fest 2025',date:'28',month:'MAR',type:'event',desc:'Annual Technical Fest'},
+  {name:'Mid-Semester Exam',date:'05',month:'APR',type:'exam',desc:'Theory Papers Begin'},
+  {name:'Good Friday',date:'18',month:'APR',type:'holiday',desc:'National Holiday'},
+  {name:'Annual Sports Day',date:'22',month:'APR',type:'event',desc:'Inter-Batch Competition'},
+  {name:'End-Semester Exam',date:'10',month:'MAY',type:'exam',desc:'Final Examination'},
+];
+
+const SUBJECTS_ATT = [
+  {name:'Data Structures & Algorithms',attended:28,total:32,color:'var(--accent)'},
+  {name:'DBMS',attended:27,total:30,color:'var(--accent3)'},
+  {name:'Computer Networks',attended:24,total:28,color:'var(--accent5)'},
+  {name:'Operating Systems Lab',attended:17,total:25,color:'var(--accent2)'},
+  {name:'Python Programming',attended:30,total:35,color:'var(--accent4)'},
+];
+
+const TIMETABLE_DATA = {
+  days:['MON','TUE','WED','THU','FRI','SAT'],
+  slots:['09:00','10:00','11:00','12:00','14:00','15:00','16:00'],
+  data:[
+    [{sub:'DSA',teacher:'Prof. Mehta',room:'Lab-3',color:'#6c63ff33',tc:'var(--accent)'},
+     {sub:'DBMS',teacher:'Prof. Sharma',room:'Room-201',color:'#43e97b22',tc:'var(--accent3)'},
+     {},{sub:'CN',teacher:'Prof. Nair',room:'Room-102',color:'#4ecdc422',tc:'var(--accent5)'},
+     {sub:'OS Lab',teacher:'Prof. Kumar',room:'Lab-1',color:'#ff6b6b22',tc:'var(--accent2)'},
+     {},{sub:'Python',teacher:'Prof. Das',room:'Room-204',color:'#f7971e22',tc:'var(--accent4)'}],
+    [{},{sub:'DSA',teacher:'Prof. Mehta',room:'Room-301',color:'#6c63ff33',tc:'var(--accent)'},
+     {sub:'DBMS Lab',teacher:'Prof. Sharma',room:'Lab-2',color:'#43e97b22',tc:'var(--accent3)'},
+     {},{sub:'CN',teacher:'Prof. Nair',room:'Room-102',color:'#4ecdc422',tc:'var(--accent5)'},
+     {sub:'Python',teacher:'Prof. Das',room:'Lab-3',color:'#f7971e22',tc:'var(--accent4)'},{}],
+    [{sub:'OS',teacher:'Prof. Kumar',room:'Room-204',color:'#ff6b6b22',tc:'var(--accent2)'},
+     {},{sub:'DSA',teacher:'Prof. Mehta',room:'Lab-3',color:'#6c63ff33',tc:'var(--accent)'},
+     {sub:'DBMS',teacher:'Prof. Sharma',room:'Room-201',color:'#43e97b22',tc:'var(--accent3)'},
+     {},{sub:'CN Lab',teacher:'Prof. Nair',room:'Lab-1',color:'#4ecdc422',tc:'var(--accent5)'},{}],
+    [{sub:'Python',teacher:'Prof. Das',room:'Room-204',color:'#f7971e22',tc:'var(--accent4)'},
+     {sub:'OS',teacher:'Prof. Kumar',room:'Room-301',color:'#ff6b6b22',tc:'var(--accent2)'},
+     {},{sub:'DSA',teacher:'Prof. Mehta',room:'Room-102',color:'#6c63ff33',tc:'var(--accent)'},
+     {sub:'DBMS',teacher:'Prof. Sharma',room:'Lab-2',color:'#43e97b22',tc:'var(--accent3)'},
+     {},{}],
+    [{sub:'CN',teacher:'Prof. Nair',room:'Room-201',color:'#4ecdc422',tc:'var(--accent5)'},
+     {sub:'Python',teacher:'Prof. Das',room:'Lab-3',color:'#f7971e22',tc:'var(--accent4)'},
+     {sub:'OS Lab',teacher:'Prof. Kumar',room:'Lab-1',color:'#ff6b6b22',tc:'var(--accent2)'},
+     {},{sub:'DSA',teacher:'Prof. Mehta',room:'Room-301',color:'#6c63ff33',tc:'var(--accent)'},
+     {sub:'DBMS',teacher:'Prof. Sharma',room:'Room-201',color:'#43e97b22',tc:'var(--accent3)'},{}],
+    [{sub:'Sports',teacher:'PT Dept.',room:'Ground',color:'#88888822',tc:'var(--muted)'},
+     {},{},{},{},{},{}],
+  ]
+};
+
+// ===== LOGIN =====
+function doLogin(){
+  const id = document.getElementById('loginId').value||'NIELIT/2024/001';
+  const role = document.getElementById('loginRole').value;
+  const names = {student:'Arjun Mehta',teacher:'Prof. Sharma',admin:'Admin'};
+  currentUser = {id,role,name:names[role]};
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('sidebar').style.display='flex';
+  document.getElementById('mainApp').style.display='block';
+  document.getElementById('userName').textContent=currentUser.name;
+  document.getElementById('userRole').textContent=currentUser.role.toUpperCase();
+  document.getElementById('userAvatar').textContent=currentUser.name.split(' ').map(w=>w[0]).join('').slice(0,2);
+  document.getElementById('greetName').textContent=currentUser.name.split(' ')[0];
+  const now=new Date();
+  document.getElementById('currentDate').textContent=now.toDateString();
+  initAll();
+}
+function logout(){
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('sidebar').style.display='none';
+  document.getElementById('mainApp').style.display='none';
+}
+
+// ===== NAVIGATION =====
+function navigate(page, el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  el.classList.add('active');
+  const titles={dashboard:'Dashboard',timetable:'Timetable',notes:'Notes & Assignments',events:'Events & Holidays',complaints:'Complaint System',chat:'Group Chat',attendance:'Attendance & Analytics'};
+  document.getElementById('pageTitle').textContent=titles[page];
+}
+
+// ===== INIT ALL =====
+function initAll(){
+  buildTimetable();
+  buildNotes();
+  buildEvents();
+  buildComplaints();
+  buildChat();
+  buildAttendance();
+  buildWeeklyChart();
+  updateOnlineCount();
+}
+
+// ===== TIMETABLE =====
+function buildTimetable(){
+  const g=document.getElementById('timetableGrid');
+  g.innerHTML='<div class="tt-header"></div>';
+  TIMETABLE_DATA.days.forEach(d=>{
+    g.innerHTML+=`<div class="tt-header">${d}</div>`;
+  });
+  TIMETABLE_DATA.slots.forEach((slot,si)=>{
+    g.innerHTML+=`<div class="tt-time">${slot}</div>`;
+    TIMETABLE_DATA.data.forEach((day,di)=>{
+      const c=day[si];
+      if(!c||!c.sub){
+        g.innerHTML+=`<div class="tt-cell empty"></div>`;
+      } else {
+        g.innerHTML+=`<div class="tt-cell filled" style="background:${c.color};border:1px solid ${c.tc}33;" onclick="showToast('📚 ${c.sub} — ${c.teacher} @ ${c.room}')">
+          <div style="font-weight:700;font-size:12px;color:${c.tc}">${c.sub}</div>
+          <div class="tt-sub" style="color:${c.tc}">${c.teacher}</div>
+          <div class="tt-room">${c.room}</div>
+        </div>`;
+      }
+    });
+  });
+}
+
+// ===== NOTES =====
+function buildNotes(filter='all'){
+  const g=document.getElementById('notesGrid');
+  const typeColors={notes:'var(--accent)',assignment:'var(--accent2)',pyq:'var(--accent4)'};
+  const filtered=filter==='all'?NOTES:NOTES.filter(n=>n.type===filter);
+  g.innerHTML=filtered.map(n=>`
+    <div class="note-card" onclick="showToast('📥 Downloading: ${n.title}')">
+      <div class="note-tag">${n.type.toUpperCase()}</div>
+      <div class="note-title">${n.title}</div>
+      <div style="font-size:12px;color:var(--muted);margin:6px 0 8px;font-family:var(--font-mono);">${n.subject}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="note-meta">by ${n.by} · ${n.date}</div>
+        <div style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">${n.size}</div>
+      </div>
+      <button class="btn" style="width:100%;margin-top:10px;justify-content:center;font-size:12px;" onclick="event.stopPropagation();showToast('📥 ${n.title} downloaded!')">⬇ Download</button>
+    </div>
+  `).join('');
+}
+function filterNotes(f,el){
+  document.querySelectorAll('#page-notes .btn').forEach(b=>{b.style.borderColor='';b.style.color='';});
+  el.style.borderColor='var(--accent)';el.style.color='var(--accent)';
+  buildNotes(f);
+}
+function uploadNote(){
+  const t=document.getElementById('noteTitle').value;
+  if(!t){showToast('⚠ Please enter a title!');return;}
+  showToast('☁️ Uploading to Cloudinary...');
+  setTimeout(()=>{
+    NOTES.unshift({title:t,subject:document.getElementById('noteSubject').value.split(' ')[0],type:document.getElementById('noteType').value,date:'Today',size:'—',by:currentUser.name});
+    buildNotes();closeModal('uploadModal');
+    showToast('✅ File uploaded successfully!');
+  },1500);
+}
+
+// ===== EVENTS =====
+function buildEvents(){
+  const el=document.getElementById('eventsList');
+  el.innerHTML=EVENTS.map(e=>`
+    <div class="event-item">
+      <div class="event-date">
+        <div class="event-day" style="color:${e.type==='holiday'?'var(--accent2)':e.type==='exam'?'var(--accent4)':'var(--accent5)'}">${e.date}</div>
+        <div class="event-month">${e.month}</div>
+      </div>
+      <div class="event-content">
+        <div class="event-name">${e.name}</div>
+        <div class="event-desc">
+          <span class="badge badge-${e.type==='holiday'?'holiday':e.type==='exam'?'progress':'event'}">${e.type.toUpperCase()}</span>
+          <span style="font-size:12px;color:var(--muted);margin-left:8px;">${e.desc}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function submitEvent(){
+  const n=document.getElementById('eventName').value;
+  const d=document.getElementById('eventDate').value;
+  if(!n||!d){showToast('⚠ Fill all fields!');return;}
+  const dt=new Date(d);
+  EVENTS.push({name:n,date:String(dt.getDate()).padStart(2,'0'),month:dt.toLocaleString('en',{month:'short'}).toUpperCase(),type:document.getElementById('eventType').value,desc:''});
+  buildEvents();closeModal('eventModal');showToast('✅ Event added!');
+}
+
+// ===== COMPLAINTS =====
+function buildComplaints(){
+  const t=document.getElementById('complaintsTable');
+  t.innerHTML=COMPLAINTS.map(c=>`
+    <tr>
+      <td><span style="font-family:var(--font-mono);color:var(--accent)">${c.id}</span></td>
+      <td>${c.subject}</td>
+      <td><span class="badge badge-event">${c.category}</span></td>
+      <td><span style="font-family:var(--font-mono);color:var(--muted)">${c.date}</span></td>
+      <td><span class="badge badge-${c.status==='pending'?'pending':c.status==='progress'?'progress':'resolved'}">${c.status==='progress'?'IN PROGRESS':c.status.toUpperCase()}</span></td>
+      <td><button class="btn" style="font-size:11px;padding:4px 10px;" onclick="showToast('ℹ Complaint ${c.id}: ${c.subject}')">View</button></td>
+    </tr>
+  `).join('');
+}
+function submitComplaint(){
+  const s=document.getElementById('complaintSubject').value;
+  if(!s){showToast('⚠ Enter complaint subject!');return;}
+  const id='C'+String(COMPLAINTS.length+1).padStart(3,'0');
+  COMPLAINTS.unshift({id,subject:s,category:document.getElementById('complaintCategory').value,date:'Today',status:'pending'});
+  buildComplaints();closeModal('complaintModal');showToast('✅ Complaint '+id+' submitted!');
+  document.querySelector('.nav-badge').textContent=COMPLAINTS.filter(c=>c.status==='pending').length;
+}
+
+// ===== CHAT =====
+const USER_COLORS=['var(--accent)','var(--accent2)','var(--accent3)','var(--accent4)','var(--accent5)'];
+function getUserColor(name){let h=0;for(let c of name)h+=c.charCodeAt(0);return USER_COLORS[h%USER_COLORS.length];}
+function buildChat(){renderMessages();}
+function renderMessages(){
+  const msgs=MESSAGES[currentRoom]||[];
+  const container=document.getElementById('chatMessages');
+  container.innerHTML=msgs.map(m=>{
+    const isOwn=m.own;
+    const initials=m.user.split(' ').map(w=>w[0]).join('').slice(0,2);
+    const color=getUserColor(m.user);
+    const badge=m.role==='teacher'?`<span style="font-size:9px;background:rgba(108,99,255,0.2);color:var(--accent);padding:1px 5px;border-radius:3px;margin-left:4px;font-family:var(--font-mono)">TEACHER</span>`:m.role==='admin'?`<span style="font-size:9px;background:rgba(255,107,107,0.2);color:var(--accent2);padding:1px 5px;border-radius:3px;margin-left:4px;font-family:var(--font-mono)">ADMIN</span>`:'';
+    return `<div class="chat-msg${isOwn?' own':''}">
+      <div class="msg-avatar" style="background:${color}22;color:${color};font-size:11px">${initials}</div>
+      <div>
+        ${!isOwn?`<div style="font-size:11px;color:var(--muted);margin-bottom:3px;font-family:var(--font-mono)">${m.user}${badge}</div>`:''}
+        <div class="msg-bubble">${m.text}</div>
+        <div class="msg-meta">${m.time}</div>
+      </div>
+    </div>`;
+  }).join('');
+  container.scrollTop=container.scrollHeight;
+}
+function sendMessage(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();
+  if(!text)return;
+  const msgs=MESSAGES[currentRoom]||(MESSAGES[currentRoom]=[]);
+  const now=new Date();
+  msgs.push({user:currentUser.name,role:currentUser.role,text,time:`${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`,own:true});
+  input.value='';
+  renderMessages();
+  // Simulate reply
+  if(msgs.length%3===0){
+    setTimeout(()=>{
+      document.getElementById('typingIndicator').textContent='Rahul is typing...';
+      setTimeout(()=>{
+        document.getElementById('typingIndicator').textContent='';
+        msgs.push({user:'Rahul Sharma',role:'student',text:'Got it! Thanks for sharing 👍',time:`${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`,own:false});
+        renderMessages();
+      },1800);
+    },800);
+  }
+}
+function switchRoom(room,el){
+  currentRoom=room;
+  document.querySelectorAll('.chat-room').forEach(r=>r.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('chatRoomTitle').textContent='# '+room;
+  renderMessages();
+}
+function updateOnlineCount(){
+  const total=Math.floor(Math.random()*30)+40;
+  document.getElementById('onlineCount').textContent=total+' users currently online';
+}
+
+// ===== ATTENDANCE =====
+function buildAttendance(){
+  const s=document.getElementById('subjectAttendance');
+  s.innerHTML=SUBJECTS_ATT.map(sub=>{
+    const pct=Math.round((sub.attended/sub.total)*100);
+    const warn=pct<75?`<span style="color:var(--accent2);font-size:10px">⚠ LOW</span>`:'';
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="font-size:13px">${sub.name}</div>
+        <div style="font-family:var(--font-mono);font-size:12px;color:${pct<75?'var(--accent2)':'var(--accent3)'};">${pct}% ${warn}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="att-bar-wrap" style="flex:1"><div class="att-bar" style="width:${pct}%;background:${sub.color}"></div></div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);white-space:nowrap">${sub.attended}/${sub.total}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const trend=document.getElementById('monthlyTrend');
+  const months=[72,80,84,78,88,84];
+  trend.innerHTML=months.map((v,i)=>`<div class="mini-bar" style="flex:1;height:${v}%;background:${i===4?'var(--accent)':'rgba(108,99,255,0.3)'};border-radius:4px 4px 0 0;" onclick="showToast('Month ${i+1}: ${v}% attendance')"></div>`).join('');
+}
+
+// ===== WEEKLY CHART =====
+function buildWeeklyChart(){
+  const c=document.getElementById('weeklyChart');
+  const vals=[4,3,5,4,5,2];
+  const max=5;
+  const colors=['var(--accent)','var(--accent)','var(--accent3)','var(--accent)','var(--accent)','var(--muted)'];
+  c.innerHTML=vals.map((v,i)=>`<div class="mini-bar" style="flex:1;height:${(v/max)*100}%;background:${colors[i]};opacity:${v===max?1:0.6}" onclick="showToast('Day ${i+1}: ${v}/${max} classes attended')"></div>`).join('');
+}
+
+// ===== MODALS =====
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});});
+
+// ===== TOAST =====
+let toastTimeout;
+function showToast(msg){
+  clearTimeout(toastTimeout);
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  toastTimeout=setTimeout(()=>t.classList.remove('show'),3200);
+}
+function showNotif(){showToast('🔔 3 new notifications: DSA deadline, TCS drive, Complaint update');}
+</script>
+</body>
+</html>
