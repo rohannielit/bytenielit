@@ -112,7 +112,7 @@ export default function Notices() {
 
       {/* Post Notice Modal */}
       {showForm && (
-        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.65)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:50 }}>
+        <div style={{ position: "fixed",top: 0,left: 0,right: 0,bottom: 0,width: "100vw",height: "100vh",background: "rgba(0,0,0,0.65)",display: "flex",alignItems: "center",justifyContent: "center",zIndex: 99999, }}>
           <div style={{ background:"var(--card)", border:"1px solid var(--border)", borderRadius:16, padding:24, width:480, maxWidth:"90vw", maxHeight:"90vh", overflowY:"auto" }}>
             <h2 style={{ fontWeight:600, fontSize:16, marginBottom:16 }}>Post New Notice</h2>
             <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
