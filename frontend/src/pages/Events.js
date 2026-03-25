@@ -24,7 +24,7 @@ const Overlay = ({ children, onClose }) => (
       display:"flex",
       alignItems:"flex-start",
       justifyContent:"center",
-      paddingTop:"40px",
+      paddingTop:"0px",
       zIndex:99999,
     }}
   >
