@@ -11,8 +11,8 @@ const Card = ({ children, style }) => (
 );
 
 const StatCard = ({ label, value, color, to }) => (
-  <Link to={to} style={{ textDecoration:"none" }}>
-    <div style={{ background:"var(--card)", border:"1px solid var(--border)", borderRadius:12, padding:20, cursor:"pointer", transition:"border-color 0.15s" }}
+  <Link to={to} style={{ textDecoration:"none", width:"100%", boxSizing:"border-box" }}>
+    <div style={{ background:"var(--card)", border:"1px solid var(--border)", borderRadius:12, padding:20, cursor:"pointer", transition:"border-color 0.15s", width:"100%", boxSizing:"border-box" }}
       onMouseEnter={e=>e.currentTarget.style.borderColor=color}
       onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
       <div style={{ fontSize:28, fontWeight:700, color }}>{value}</div>
@@ -74,7 +74,7 @@ const [complaints, setComplaints] = useState([]);
       </div>
 
       {/* Stats */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))", gap:14, marginBottom:28 }}>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4, 1fr)", gap:"16px", width:"100%", marginBottom:28 }}>
         <StatCard label="Upcoming Events" value={events.length} color="#3b82f6" to="/events" />
         <StatCard label="Notes & Files" value={notes.length} color="#8b5cf6" to="/notes" />
         <StatCard label="Pending Complaints" value={pending} color="#ef4444" to="/complaints" />
