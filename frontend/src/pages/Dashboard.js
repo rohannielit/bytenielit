@@ -35,7 +35,7 @@ const [complaints, setComplaints] = useState([]);
 
   useEffect(() => {
     Promise.all([
-      api.get("/events"),
+      api.get("/events/upcoming"),
       api.get("/notes"),
       api.get("/complaints"),
       api.get("/users"),

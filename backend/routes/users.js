@@ -3,7 +3,7 @@ const User = require("../models/User");
 const { protect, requireRole } = require("../middleware/auth");
 const router = express.Router();
 
-router.get("/", protect, requireRole("admin","teacher"), async (req, res) => {
+router.get("/", protect, async (req, res) => {
   try {
     const users = await User.find().select("-password").sort("-createdAt");
     res.json(users);

@@ -10,6 +10,17 @@ router.get("/", protect, async (req, res) => {
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
+router.get("/upcoming", protect, async (req, res) => {
+  try {
+    const now = new Date();
+    const events = await Event.find({ date: { $gte: now } })
+      .populate("createdBy", "name")
+      .sort("date")
+      .limit(10);
+    res.json(events);
+  } catch (err) { res.status(500).json({ message: err.message }); }
+});
+
 router.post("/", protect, requireRole("admin","teacher"), async (req, res) => {
   try {
     const event = await Event.create({ ...req.body, createdBy: req.user.id });
