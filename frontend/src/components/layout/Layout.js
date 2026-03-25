@@ -74,10 +74,24 @@ export default function Layout() {
               <div style={{ fontSize:11, color:roleColor[user?.role], textTransform:"capitalize" }}>{user?.role}</div>
             </div>
           )}
-          {!collapsed && (
-            <button onClick={handleLogout} title="Logout" style={{ background:"none", border:"none", color:"var(--text3)", fontSize:16, padding:4, borderRadius:6, cursor:"pointer" }}>⇥</button>
-          )}
         </div>
+
+        {/* Prominent always-visible Logout */}
+        <button 
+          onClick={async () => {
+            if (window.confirm("Log out? This will clear your session.")) {
+              await handleLogout();
+            }
+          }} 
+          style={{
+            display:"flex", alignItems:"center", gap:6, padding:"12px 16px", margin:"0 8px 4px",
+            background:"#fef2f2", border:"1px solid #fecaca", borderRadius:8,
+            color:"#dc2626", fontWeight:600, fontSize:14, cursor:"pointer",
+            transition:"all 0.2s", justifyContent:collapsed ? "center":"flex-start"
+          }}
+        >
+          <span style={{fontSize:18}}>🚪</span> {!collapsed && "Logout"}
+        </button>
 
         <button onClick={() => setCollapsed(p=>!p)} style={{ background:"none", border:"none", color:"var(--text3)", padding:"8px", fontSize:18, borderTop:"1px solid var(--border)", cursor:"pointer" }}>
           {collapsed ? "›" : "‹"}
