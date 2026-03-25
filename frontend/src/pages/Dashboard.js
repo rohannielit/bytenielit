@@ -22,13 +22,15 @@ const StatCard = ({ label, value, color, to }) => (
 );
 
 const typeColor = { holiday:"#10b981", event:"#3b82f6", exam:"#ef4444", deadline:"#f59e0b", other:"#8b5cf6" };
+const roleColor = { admin:"#ef4444", teacher:"#f59e0b", student:"#10b981" };
 
 export default function Dashboard() {
   const { user } = useAuth();
   const { onlineUsers } = useSocket();
   const [events, setEvents] = useState([]);
   const [notes, setNotes] = useState([]);
-  const [complaints, setComplaints] = useState([]);
+const [complaints, setComplaints] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,10 +38,12 @@ export default function Dashboard() {
       api.get("/events"),
       api.get("/notes"),
       api.get("/complaints"),
-    ]).then(([ev, nt, cp]) => {
+      api.get("/users"),
+    ]).then(([ev, nt, cp, us]) => {
       setEvents(ev.data.slice(0,5));
       setNotes(nt.data.slice(0,5));
       setComplaints(cp.data);
+      setUsers(us.data.slice(0,20));
     }).catch(()=>{}).finally(()=>setLoading(false));
   }, []);
 
@@ -77,7 +81,7 @@ export default function Dashboard() {
         <StatCard label="Online Now" value={onlineUsers.length} color="#10b981" to="/chat" />
       </div>
 
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:18 }}>
+<div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(380px, 1fr))", gap:18 }}>
         {/* Upcoming Events */}
         <Card>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
@@ -128,7 +132,7 @@ export default function Dashboard() {
 
         {/* Online Users */}
         <Card>
-          <h2 style={{ fontSize:15, fontWeight:600, marginBottom:14 }}>Online Users ({onlineUsers.length})</h2>
+          <h2 style={{ fontSize:15, fontWeight:600, marginBottom:14 }}>Online Now ({onlineUsers.length})</h2>
           <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
             {onlineUsers.slice(0,12).map((u,i) => (
               <div key={i} style={{ display:"flex", alignItems:"center", gap:6, background:"var(--bg3)", padding:"5px 10px", borderRadius:20, fontSize:12 }}>
@@ -139,6 +143,57 @@ export default function Dashboard() {
             ))}
             {onlineUsers.length === 0 && <p style={{ color:"var(--text3)", fontSize:13 }}>No one online right now</p>}
           </div>
+        </Card>
+
+        {/* All Members */}
+        <Card style={{ gridColumn: "1 / -1" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <h2 style={{ fontSize: 15, fontWeight: 600 }}>All Members ({users.length})</h2>
+            <Link to="/admin" style={{ fontSize: 12, color: "var(--accent)" }}>View all →</Link>
+          </div>
+          {loading ? (
+            <p style={{ color: "var(--text3)", fontSize: 13 }}>Loading members...</p>
+          ) : users.length === 0 ? (
+            <p style={{ color: "var(--text3)", fontSize: 13 }}>No members found</p>
+          ) : (
+            <div style={{ maxHeight: 400, overflowY: "auto" }}>
+              {users.map((u) => {
+                const isOnline = onlineUsers.some(ou => ou.name === u.name);
+                return (
+                  <div key={u._id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", borderBottom: "1px solid var(--border)" }}>
+                    <div style={{
+                      width: 40, height: 40, borderRadius: "50%",
+                      background: `${roleColor[u.role] || "#3b82f6"}33`,
+                      border: `2px solid ${roleColor[u.role] || "#3b82f6"}66`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontWeight: 700, fontSize: 15, color: roleColor[u.role] || "#3b82f6",
+                      flexShrink: 0
+                    }}>
+                      {u.name?.[0]?.toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 500 }}>{u.name}</div>
+                      <div style={{ fontSize: 11, color: "var(--text2)" }}>
+                        {u.branch && `${u.branch}`} {u.semester && `Sem ${u.semester}`}
+                      </div>
+                    </div>
+                    <span style={{
+                      fontSize: 10, padding: "3px 8px", borderRadius: 12,
+                      background: `${roleColor[u.role] || "#3b82f6"}22`,
+                      color: roleColor[u.role] || "#3b82f6"
+                    }}>
+                      {u.role}
+                    </span>
+                    <span style={{
+                      width: 8, height: 8, borderRadius: "50%",
+                      background: isOnline ? "var(--green)" : "#64748b",
+                      flexShrink: 0
+                    }} />
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </Card>
 
         {/* Quick Actions */}
